@@ -5,9 +5,19 @@ An OpenClaw skill project for driving the Gemini web UI through OpenClaw's manag
 ## What It Does
 
 - reuses Gemini login state in OpenClaw's browser profile
-- performs best-effort credential login when secrets already exist in the environment
+- performs best-effort credential login when secrets already exist in the OpenClaw run
 - generates TOTP / 2FA codes without third-party dependencies
 - supports Gemini text chat, thread continuation, file and image uploads, analysis and drafting tasks, image generation, and download handling
+
+## Verified Flow
+
+This project has been exercised end to end in a clean OpenClaw browser profile:
+
+- Google account email step
+- Google password step
+- Google Authenticator TOTP / two-factor verification
+- Gemini web app entry at `https://gemini.google.com/app`
+- successful prompt and response round-trip inside Gemini
 
 ## Project Layout
 
@@ -45,6 +55,6 @@ python3 skills/openclaw-gemini-web/scripts/totp.py --uri 'otpauth://totp/Gemini:
 clawhub publish skills/openclaw-gemini-web \
   --slug openclaw-gemini-web \
   --name "OpenClaw Gemini Web" \
-  --version 0.1.1 \
-  --changelog "Broaden skill scope from image-heavy Gemini flows to general Gemini Web interaction"
+  --version 0.1.2 \
+  --changelog "Document verified Google password + TOTP login flow and Gemini interaction round-trip"
 ```

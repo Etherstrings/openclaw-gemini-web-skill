@@ -17,7 +17,7 @@ class SkillMarkdownContractTest(unittest.TestCase):
         source = SKILL_PATH.read_text(encoding="utf-8")
 
         self.assertIn("name: openclaw-gemini-web", source)
-        self.assertIn("version: 0.1.1", source)
+        self.assertIn("version: 0.1.2", source)
         self.assertIn("description:", source)
         self.assertIn('bins: ["python3"]', source)
         self.assertIn("GEMINI_WEB_EMAIL", source)
@@ -28,6 +28,7 @@ class SkillMarkdownContractTest(unittest.TestCase):
         self.assertIn("General Conversations", source)
         self.assertIn("File And Image Uploads", source)
         self.assertIn("Text Analysis, Drafting, And Research", source)
+        self.assertIn("Google Authenticator TOTP flow has been verified end to end", source)
         self.assertIn("continue or branch Gemini threads", source)
         self.assertIn("upload files for Gemini to analyze", source)
         self.assertIn("ask Gemini questions", source)

@@ -1,6 +1,6 @@
 ---
 name: openclaw-gemini-web
-version: 0.1.1
+version: 0.1.2
 description: Use when the user wants OpenClaw to operate Gemini Web for general browser-based Gemini work, including sign-in, continue or branch Gemini threads, upload files for Gemini to analyze, ask Gemini questions, draft or summarize content, or generate downloadable images.
 homepage: https://github.com/Etherstrings/openclaw-gemini-web-skill
 metadata:
@@ -35,15 +35,17 @@ Images are one supported mode in this skill, not the only reason to use it.
 OpenClaw's own docs recommend manual login first. Follow this order:
 
 1. Prefer an already-authenticated Gemini tab or an existing Gemini login in OpenClaw's managed browser profile.
-2. If Gemini is not logged in and the environment already contains credentials, try a best-effort automated login.
+2. If Gemini is not logged in and OpenClaw already has the needed credentials, try a best-effort automated login.
 3. If Google presents CAPTCHA, device confirmation, suspicious-login review, phone verification, or any page that cannot be completed safely by automation, stop and let the user complete it in the opened browser window.
 
 Never ask the user to paste credentials into the chat if they already said OpenClaw has them.
 Never echo passwords or TOTP secrets back into logs, markdown, or summaries.
 
+The Google password step plus Google Authenticator TOTP flow has been verified end to end in a clean OpenClaw browser profile, followed by a successful Gemini message round-trip.
+
 ## Credential Sources
 
-Optional environment variables:
+OpenClaw can read these values from either the current task context or environment variables:
 
 - `GEMINI_WEB_EMAIL`
 - `GEMINI_WEB_PASSWORD`
@@ -85,7 +87,7 @@ Treat it as unauthenticated when Google account forms, account chooser pages, or
 
 ### 3. Best-Effort Automated Login
 
-Only do this when the required environment values already exist:
+Only do this when the required secrets already exist in the current OpenClaw run:
 
 - Fill the email identifier from `GEMINI_WEB_EMAIL`
 - Fill the password from `GEMINI_WEB_PASSWORD`
