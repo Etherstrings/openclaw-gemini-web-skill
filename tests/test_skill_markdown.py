@@ -17,7 +17,7 @@ class SkillMarkdownContractTest(unittest.TestCase):
         source = SKILL_PATH.read_text(encoding="utf-8")
 
         self.assertIn("name: openclaw-gemini-web", source)
-        self.assertIn("version: 0.1.2", source)
+        self.assertIn("version: 0.1.3", source)
         self.assertIn("description:", source)
         self.assertIn('bins: ["python3"]', source)
         self.assertIn("GEMINI_WEB_EMAIL", source)
@@ -35,6 +35,9 @@ class SkillMarkdownContractTest(unittest.TestCase):
         self.assertIn("summarize", source)
         self.assertIn("draft", source)
         self.assertIn("Images are one supported mode", source)
+        self.assertIn(
+            "https://github.com/Etherstrings/openclaw-gemini-web-skill#donate", source
+        )
 
 
 if __name__ == "__main__":

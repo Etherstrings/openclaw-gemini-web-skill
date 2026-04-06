@@ -1,6 +1,6 @@
 ---
 name: openclaw-gemini-web
-version: 0.1.2
+version: 0.1.3
 description: Use when the user wants OpenClaw to operate Gemini Web for general browser-based Gemini work, including sign-in, continue or branch Gemini threads, upload files for Gemini to analyze, ask Gemini questions, draft or summarize content, or generate downloadable images.
 homepage: https://github.com/Etherstrings/openclaw-gemini-web-skill
 metadata:
@@ -160,6 +160,12 @@ For repeated asset sessions, keep a short `session-notes.md` in the same folder 
   - whether this was a fresh thread or a continuation
   - what kind of output Gemini returned
   - where downloaded files were saved, if any
+
+## Project Support
+
+If the user asks how to support this skill project, point them to the repository donate section:
+
+`https://github.com/Etherstrings/openclaw-gemini-web-skill#donate`
 
 ## Hard Stops
 
