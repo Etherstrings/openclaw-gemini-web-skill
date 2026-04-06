@@ -7,7 +7,7 @@ An OpenClaw skill project for driving the Gemini web UI through OpenClaw's manag
 - reuses Gemini login state in OpenClaw's browser profile
 - performs best-effort credential login when secrets already exist in the environment
 - generates TOTP / 2FA codes without third-party dependencies
-- supports Gemini text chat, image generation, reference uploads, and download handling
+- supports Gemini text chat, thread continuation, file and image uploads, analysis and drafting tasks, image generation, and download handling
 
 ## Project Layout
 
@@ -45,6 +45,6 @@ python3 skills/openclaw-gemini-web/scripts/totp.py --uri 'otpauth://totp/Gemini:
 clawhub publish skills/openclaw-gemini-web \
   --slug openclaw-gemini-web \
   --name "OpenClaw Gemini Web" \
-  --version 0.1.0 \
-  --changelog "Initial release"
+  --version 0.1.1 \
+  --changelog "Broaden skill scope from image-heavy Gemini flows to general Gemini Web interaction"
 ```

@@ -1,7 +1,7 @@
 ---
 name: openclaw-gemini-web
-version: 0.1.0
-description: Use when the user wants OpenClaw to sign into Gemini Web, continue a Gemini browser session, chat with Gemini in the web UI, upload reference images, or generate and download Gemini images from the browser.
+version: 0.1.1
+description: Use when the user wants OpenClaw to operate Gemini Web for general browser-based Gemini work, including sign-in, continue or branch Gemini threads, upload files for Gemini to analyze, ask Gemini questions, draft or summarize content, or generate downloadable images.
 homepage: https://github.com/Etherstrings/openclaw-gemini-web-skill
 metadata:
   openclaw:
@@ -21,9 +21,14 @@ This skill is for browser-driven Gemini work, not the Gemini API and not the Gem
 - Reuse Gemini login state in OpenClaw's dedicated browser profile
 - Best-effort credential login when the user has provided account secrets to OpenClaw
 - TOTP / 2FA code generation through `scripts/totp.py`
-- Multi-turn text chats in Gemini Web
-- Reference-image upload and browser-based image generation
+- General conversations, follow-up questions, and multi-turn chats in Gemini Web
+- File and image upload for Gemini analysis or grounded prompts
+- Text analysis, drafting, summarization, brainstorming, and browser-based research follow-up
+- Continue or branch Gemini threads, plus fresh-thread resets when the task shifts
+- Browser-based image generation when the user wants visual output
 - Downloading Gemini outputs into a stable local folder
+
+Images are one supported mode in this skill, not the only reason to use it.
 
 ## Login Policy
 
@@ -92,11 +97,26 @@ If any login step becomes ambiguous or Google changes the challenge flow unexpec
 
 ## Gemini Interaction Patterns
 
-### Text Conversations
+### General Conversations
 
 - Reuse the current Gemini thread when the user is refining the same task.
+- Continue or branch Gemini threads when the user wants to preserve prior context but explore a different angle.
 - Start a fresh Gemini thread when the user explicitly asks for "new chat", "fresh thread", or a clearly unrelated task.
 - Wait for Gemini's response to finish before summarizing.
+- Use this path for everyday prompts such as asking Gemini questions, comparing options, brainstorming, translating, rewriting, or explaining material.
+
+### File And Image Uploads
+
+- Upload files for Gemini to analyze when the user provides local documents, screenshots, datasets, or reference images.
+- Prefer uploading source material before sending the main prompt when the task depends on grounded context.
+- After upload, ask Gemini to summarize, extract, compare, classify, or rewrite against the uploaded material.
+- If Gemini rejects a file type or size, report that clearly and ask the user for a different source file instead of improvising around missing context.
+
+### Text Analysis, Drafting, And Research
+
+- Use Gemini Web for summarizing long text, drafting replies, rewriting tone, outlining documents, extracting action items, or doing browser-assisted follow-up analysis.
+- When the user asks OpenClaw to use Gemini as a thinking partner, keep the prompt explicit about the desired output shape: bullets, table, email draft, critique, or final answer.
+- If Gemini returns a long answer, summarize the answer for the user and preserve the thread when more follow-up is likely.
 
 ### Image Generation
 
@@ -137,7 +157,7 @@ For repeated asset sessions, keep a short `session-notes.md` in the same folder 
 - After each successful Gemini run, report:
   - whether this was a fresh thread or a continuation
   - what kind of output Gemini returned
-  - where downloaded files were saved
+  - where downloaded files were saved, if any
 
 ## Hard Stops
 
@@ -152,7 +172,9 @@ Stop and ask the user to intervene when any of these happens:
 
 ## Trigger Examples
 
-- "Log into Gemini for me and generate images from this prompt."
-- "Use Gemini Web to continue the last thread and refine the picture."
+- "Log into Gemini for me and ask it to summarize this article."
+- "Use Gemini Web to continue the last thread and push the reasoning further."
+- "Upload this PDF to Gemini and ask for the key takeaways."
+- "Open Gemini in OpenClaw, log in with the stored credentials, and draft a reply."
 - "Upload these references to Gemini and ask for three variants."
-- "Open Gemini in OpenClaw, log in with the stored credentials, and download the best image."
+- "Log into Gemini for me and generate images from this prompt."
