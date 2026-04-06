@@ -19,6 +19,8 @@ class RepositoryMetadataContractTest(unittest.TestCase):
         self.assertIn("Sponsor", source)
         self.assertIn("docs/assets/donate/alipay.jpg", source)
         self.assertIn("docs/assets/donate/wechat.jpg", source)
+        self.assertIn("## 功能简介", source)
+        self.assertIn("## 已验证流程", source)
 
     def test_funding_links_to_readme_donate_anchor(self) -> None:
         source = FUNDING_PATH.read_text(encoding="utf-8")

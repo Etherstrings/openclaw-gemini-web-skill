@@ -1,7 +1,7 @@
 ---
 name: openclaw-gemini-web
-version: 0.1.3
-description: Use when the user wants OpenClaw to operate Gemini Web for general browser-based Gemini work, including sign-in, continue or branch Gemini threads, upload files for Gemini to analyze, ask Gemini questions, draft or summarize content, or generate downloadable images.
+version: 0.1.4
+description: 当用户希望 OpenClaw 通过 Gemini 网页版完成通用浏览器交互时使用，包括登录、续接或分叉 Gemini 线程、上传文件给 Gemini 分析、向 Gemini 提问、起草或总结内容，以及生成可下载图片。
 homepage: https://github.com/Etherstrings/openclaw-gemini-web-skill
 metadata:
   openclaw:
@@ -12,55 +12,55 @@ metadata:
 
 # OpenClaw Gemini Web
 
-Control the Gemini web UI through OpenClaw's browser tools.
+通过 OpenClaw 的浏览器工具控制 Gemini 网页版界面。
 
-This skill is for browser-driven Gemini work, not the Gemini API and not the Gemini CLI.
+这个 skill 面向浏览器驱动的 Gemini 网页交互，不是 Gemini API，也不是 Gemini CLI。
 
-## What This Skill Covers
+## 这个 Skill 覆盖的能力
 
-- Reuse Gemini login state in OpenClaw's dedicated browser profile
-- Best-effort credential login when the user has provided account secrets to OpenClaw
-- TOTP / 2FA code generation through `scripts/totp.py`
-- General conversations, follow-up questions, and multi-turn chats in Gemini Web
-- File and image upload for Gemini analysis or grounded prompts
-- Text analysis, drafting, summarization, brainstorming, and browser-based research follow-up
-- Continue or branch Gemini threads, plus fresh-thread resets when the task shifts
-- Browser-based image generation when the user wants visual output
-- Downloading Gemini outputs into a stable local folder
+- 复用 OpenClaw 独立浏览器档案中的 Gemini 登录状态
+- 当 OpenClaw 已持有所需账号密钥时，执行尽力而为的自动登录
+- 通过 `scripts/totp.py` 生成 TOTP / 2FA 验证码
+- 在 Gemini 网页版中进行常规对话、追问和多轮聊天
+- 上传文件和图片，让 Gemini 做分析或基于材料继续工作
+- 执行文本分析、起草、总结、脑暴，以及浏览器辅助研究
+- 续接或分叉 Gemini 线程，并在任务切换时重置为新线程
+- 当用户需要视觉输出时，通过网页模式生成图片
+- 将 Gemini 的输出下载到稳定的本地目录
 
-Images are one supported mode in this skill, not the only reason to use it.
+图片只是这个 skill 支持的一种模式，不是唯一用途。
 
-## Login Policy
+## 登录策略
 
-OpenClaw's own docs recommend manual login first. Follow this order:
+OpenClaw 自身文档建议优先人工登录。请按下面顺序处理：
 
-1. Prefer an already-authenticated Gemini tab or an existing Gemini login in OpenClaw's managed browser profile.
-2. If Gemini is not logged in and OpenClaw already has the needed credentials, try a best-effort automated login.
-3. If Google presents CAPTCHA, device confirmation, suspicious-login review, phone verification, or any page that cannot be completed safely by automation, stop and let the user complete it in the opened browser window.
+1. 优先复用已经完成认证的 Gemini 标签页，或者 OpenClaw 托管浏览器档案中已有的 Gemini 登录状态。
+2. 如果 Gemini 还没登录，而 OpenClaw 当前已经持有所需凭据，就尝试一次尽力而为的自动登录。
+3. 如果 Google 出现 CAPTCHA、设备确认、可疑登录审查、手机号验证，或者任何无法安全自动完成的页面，立即停下，让用户在已经打开的浏览器窗口中手动完成。
 
-Never ask the user to paste credentials into the chat if they already said OpenClaw has them.
-Never echo passwords or TOTP secrets back into logs, markdown, or summaries.
+如果用户已经明确说 OpenClaw 持有凭据，就不要再要求对方把账号密钥粘贴到聊天里。
+不要把密码或 TOTP 密钥原样回显到日志、Markdown 或总结里。
 
-The Google password step plus Google Authenticator TOTP flow has been verified end to end in a clean OpenClaw browser profile, followed by a successful Gemini message round-trip.
+Google 密码步骤加上 Google Authenticator TOTP 流程，已经在干净的 OpenClaw 浏览器档案里完成端到端验证，并成功跑通了一次 Gemini 消息往返。
 
-## Credential Sources
+## 凭据来源
 
-OpenClaw can read these values from either the current task context or environment variables:
+OpenClaw 可以从当前任务上下文或环境变量中读取这些值：
 
 - `GEMINI_WEB_EMAIL`
 - `GEMINI_WEB_PASSWORD`
 - `GEMINI_WEB_TOTP_SECRET`
 - `GEMINI_WEB_TOTP_URI`
 
-If both `GEMINI_WEB_TOTP_URI` and `GEMINI_WEB_TOTP_SECRET` exist, prefer the URI.
+如果 `GEMINI_WEB_TOTP_URI` 和 `GEMINI_WEB_TOTP_SECRET` 同时存在，优先使用 URI。
 
-`scripts/totp.py` accepts any one of these source styles:
+`scripts/totp.py` 支持以下任一种来源形式：
 
-- a plain Base32 secret
-- an `otpauth://totp/...` URI
-- a JSON file plus key name
+- 纯 Base32 密钥
+- `otpauth://totp/...` URI
+- 带键名的 JSON 文件
 
-Useful examples:
+常用示例：
 
 ```bash
 python3 {baseDir}/scripts/totp.py --env GEMINI_WEB_TOTP_SECRET
@@ -70,119 +70,119 @@ python3 {baseDir}/scripts/totp.py --uri 'otpauth://totp/Gemini:me@example.com?se
 python3 {baseDir}/scripts/totp.py --json-file ~/.secrets/gemini.json --json-key totp
 ```
 
-Resolve `{baseDir}` to this skill directory before using the script.
+使用脚本前，请先把 `{baseDir}` 解析成当前 skill 的目录路径。
 
-## Browser Workflow
+## 浏览器工作流
 
-### 1. Open Gemini
+### 1. 打开 Gemini
 
-- Use OpenClaw's managed browser, not the user's daily profile.
-- Navigate to `https://gemini.google.com/`.
-- If Gemini is already usable, continue with the current tab and preserve thread state unless the user asked for a fresh thread.
+- 使用 OpenClaw 的托管浏览器，不要用用户日常的个人浏览器档案。
+- 打开 `https://gemini.google.com/`。
+- 如果 Gemini 已经可以使用，就沿用当前标签页，并保留线程状态，除非用户明确要求新开线程。
 
-### 2. Detect Login State
+### 2. 判断登录状态
 
-Treat Gemini as ready when the composer or chat UI is visible.
-Treat it as unauthenticated when Google account forms, account chooser pages, or sign-in buttons are visible.
+当输入框或聊天界面可见时，把 Gemini 视为已就绪。
+当页面出现 Google 账号表单、账号选择器或登录按钮时，把它视为未登录。
 
-### 3. Best-Effort Automated Login
+### 3. 尝试自动登录
 
-Only do this when the required secrets already exist in the current OpenClaw run:
+只有在当前 OpenClaw 运行上下文里已经存在所需密钥时，才执行：
 
-- Fill the email identifier from `GEMINI_WEB_EMAIL`
-- Fill the password from `GEMINI_WEB_PASSWORD`
-- If prompted for a 2FA code:
-  - generate a code with `scripts/totp.py`
-  - fill the current code immediately
+- 用 `GEMINI_WEB_EMAIL` 填写邮箱账号
+- 用 `GEMINI_WEB_PASSWORD` 填写密码
+- 如果页面要求输入 2FA 验证码：
+  - 用 `scripts/totp.py` 即时生成一枚验证码
+  - 立刻填入当前验证码
 
-If any login step becomes ambiguous or Google changes the challenge flow unexpectedly, stop and ask the user to finish the challenge manually in the same browser window.
+如果任一步登录流程变得不明确，或者 Google 临时改变了挑战步骤，就停下来，让用户在同一个浏览器窗口里手动完成。
 
-## Gemini Interaction Patterns
+## Gemini 交互模式
 
-### General Conversations
+### 常规对话
 
-- Reuse the current Gemini thread when the user is refining the same task.
-- Continue or branch Gemini threads when the user wants to preserve prior context but explore a different angle.
-- Start a fresh Gemini thread when the user explicitly asks for "new chat", "fresh thread", or a clearly unrelated task.
-- Wait for Gemini's response to finish before summarizing.
-- Use this path for everyday prompts such as asking Gemini questions, comparing options, brainstorming, translating, rewriting, or explaining material.
+- 当用户还在打磨同一件事时，复用当前 Gemini 线程。
+- 当用户希望保留上下文、但想探索另一个方向时，续接或分叉 Gemini 线程。
+- 当用户明确说“new chat”“fresh thread”，或者任务显然已经换题时，开启新的 Gemini 线程。
+- 在总结之前，要先等 Gemini 把回复完整生成完。
+- 这条路径适合日常型请求，比如向 Gemini 提问、比较选项、脑暴、翻译、改写或解释材料。
 
-### File And Image Uploads
+### 文件与图片上传
 
-- Upload files for Gemini to analyze when the user provides local documents, screenshots, datasets, or reference images.
-- Prefer uploading source material before sending the main prompt when the task depends on grounded context.
-- After upload, ask Gemini to summarize, extract, compare, classify, or rewrite against the uploaded material.
-- If Gemini rejects a file type or size, report that clearly and ask the user for a different source file instead of improvising around missing context.
+- 当用户提供本地文档、截图、数据集或参考图时，把文件上传给 Gemini 进行分析。
+- 如果任务依赖原始材料作为上下文，优先先上传文件，再发送主提示词。
+- 上传完成后，再要求 Gemini 根据这些材料做总结、提取、比较、分类或改写。
+- 如果 Gemini 拒绝某个文件类型或大小，要明确告诉用户，并请求替换文件，不要在上下文缺失的情况下擅自硬做。
 
-### Text Analysis, Drafting, And Research
+### 文本分析、起草与研究
 
-- Use Gemini Web for summarizing long text, drafting replies, rewriting tone, outlining documents, extracting action items, or doing browser-assisted follow-up analysis.
-- When the user asks OpenClaw to use Gemini as a thinking partner, keep the prompt explicit about the desired output shape: bullets, table, email draft, critique, or final answer.
-- If Gemini returns a long answer, summarize the answer for the user and preserve the thread when more follow-up is likely.
+- 用 Gemini 网页版来总结长文本、起草回复、改写语气、列提纲、提取行动项，或者完成基于浏览器的后续研究分析。
+- 当用户希望 OpenClaw 把 Gemini 当成思考搭子时，要在提示词里明确写清楚期望输出形态，比如要点列表、表格、邮件草稿、批判意见或最终答案。
+- 如果 Gemini 返回了较长内容，就先帮用户总结重点；如果后续大概率还会继续追问，就保留当前线程。
 
-### Image Generation
+### 图片生成
 
-- If Gemini exposes an image-generation toggle or mode switch, enable it before sending the prompt.
-- If no explicit toggle is visible, send a clear image-generation prompt in the main composer.
-- Upload reference images before the prompt when the user has provided local files.
-- After generation, inspect the returned tiles and download the strongest candidate that best matches the user's latest instruction.
+- 如果 Gemini 页面提供了图片生成开关或模式切换，先打开它，再发送提示词。
+- 如果界面上看不到明确开关，就在主输入框中直接发送清晰的图片生成提示词。
+- 当用户提供了本地参考图时，要在发提示词前先上传参考图。
+- 生成结束后，检查返回的图片卡片，并下载最符合用户最新要求的那个结果。
 
-### Refinement Loops
+### 迭代修正
 
-- Keep the same thread for "make it warmer", "change the pose", "more like reference 2", and similar revisions.
-- For failed generations, try one prompt refinement before escalating to the user.
-- If Gemini starts drifting across too many edits, start a fresh thread and restate the latest approved prompt more cleanly.
+- 遇到“更暖一点”“换个姿势”“更像参考图 2”这类修正时，保持在同一条线程里继续迭代。
+- 如果第一次生成失败，先做一次提示词微调，再决定是否升级给用户处理。
+- 如果 Gemini 因为反复迭代开始明显跑偏，就新开一条线程，并用更干净的表述重述最新确认过的提示词。
 
-## Output Handling
+## 输出处理
 
-Default download folder:
+默认下载目录：
 
 ```text
 ./output/gemini/YYYY-MM-DD/
 ```
 
-If the user gives a different destination, use that instead.
+如果用户提供了别的保存位置，就按用户给定路径处理。
 
-After downloading:
+下载后：
 
-1. Move the file into the target folder immediately if Gemini or the browser saved it elsewhere first.
-2. Rename it to a stable, lowercase, hyphenated filename based on the prompt or user-supplied name.
-3. Keep extensions intact when possible.
-4. If multiple variants are downloaded, suffix them as `-01`, `-02`, and so on.
+1. 如果 Gemini 或浏览器先把文件存到了别处，立刻移动到目标文件夹。
+2. 根据提示词或用户给定名称，把文件改成稳定的、小写、连字符风格文件名。
+3. 在可能的情况下保留原始扩展名。
+4. 如果下载了多个变体，就用 `-01`、`-02` 这类后缀编号。
 
-For repeated asset sessions, keep a short `session-notes.md` in the same folder only when the user asks for provenance or the batch is large enough to justify it.
+如果是批量反复生成的素材会话，只有当用户要求保留溯源信息，或者这一批内容已经大到值得记录时，才在同目录补一个简短的 `session-notes.md`。
 
-## Recommended Response Style
+## 建议回复方式
 
-- Tell the user when Gemini is already logged in versus when a login attempt is needed.
-- If automation hits a Google safety wall, say that clearly and keep the browser ready for takeover.
-- After each successful Gemini run, report:
-  - whether this was a fresh thread or a continuation
-  - what kind of output Gemini returned
-  - where downloaded files were saved, if any
+- 告诉用户当前 Gemini 是已经登录，还是需要发起登录尝试。
+- 如果自动化撞上 Google 的安全拦截，要明确说明，并把浏览器停在可接管状态。
+- 每次成功完成一次 Gemini 交互后，都要汇报：
+  - 这次是新线程还是续接旧线程
+  - Gemini 返回了哪一类结果
+  - 如果有下载文件，文件保存到了哪里
 
-## Project Support
+## 项目支持
 
-If the user asks how to support this skill project, point them to the repository donate section:
+如果用户问如何支持这个 skill 项目，引导到仓库的捐赠区块：
 
 `https://github.com/Etherstrings/openclaw-gemini-web-skill#donate`
 
-## Hard Stops
+## 必须停下并让用户接管的情况
 
-Stop and ask the user to intervene when any of these happens:
+出现以下任一情况时，必须停下并让用户介入：
 
 - CAPTCHA
-- phone approval prompt
-- device review / suspicious sign-in page
-- recovery email or phone challenge
-- account locked / temporary block
-- terms or policy interstitials that require human acceptance
+- 手机确认提示
+- 设备审查 / 可疑登录页面
+- 恢复邮箱或手机号挑战
+- 账号锁定 / 临时封禁
+- 需要人工接受的条款或政策拦截页
 
-## Trigger Examples
+## 触发示例
 
-- "Log into Gemini for me and ask it to summarize this article."
-- "Use Gemini Web to continue the last thread and push the reasoning further."
-- "Upload this PDF to Gemini and ask for the key takeaways."
-- "Open Gemini in OpenClaw, log in with the stored credentials, and draft a reply."
-- "Upload these references to Gemini and ask for three variants."
-- "Log into Gemini for me and generate images from this prompt."
+- “帮我登录 Gemini，然后让它总结这篇文章。”
+- “用 Gemini 网页版继续上次那条线程，把推理再往前推进一点。”
+- “把这个 PDF 上传给 Gemini，让它提炼重点。”
+- “在 OpenClaw 里打开 Gemini，用已经存好的凭据登录，然后帮我起草一份回复。”
+- “把这些参考资料上传给 Gemini，让它给我出三个版本。”
+- “帮我登录 Gemini，然后按这个提示词生成图片。”
