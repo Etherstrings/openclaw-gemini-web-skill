@@ -2,6 +2,7 @@
 name: openclaw-gemini-web
 version: 0.1.0
 description: Use when the user wants OpenClaw to sign into Gemini Web, continue a Gemini browser session, chat with Gemini in the web UI, upload reference images, or generate and download Gemini images from the browser.
+homepage: https://github.com/Etherstrings/openclaw-gemini-web-skill
 metadata:
   openclaw:
     emoji: "🖼️"
