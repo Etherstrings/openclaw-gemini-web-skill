@@ -1,12 +1,21 @@
 # OpenClaw Gemini Web Skill
 
+[![Donate](https://img.shields.io/badge/Donate-%E8%B5%9E%E5%8A%A9%E6%94%AF%E6%8C%81-ffb300?style=for-the-badge)](#donate)
+[![ClawHub](https://img.shields.io/badge/ClawHub-openclaw--gemini--web-1f6feb?style=for-the-badge)](https://clawhub.ai/skills/openclaw-gemini-web)
+
 一个通过 OpenClaw 托管浏览器驱动 Gemini 网页版的 skill 项目。
+
+快速入口：
+
+- [跳转到赞助支持](#donate)
+- [查看 ClawHub 技能页](https://clawhub.ai/skills/openclaw-gemini-web)
 
 ## <a id="donate"></a>赞助支持
 
 如果这个项目对你有帮助，欢迎赞助支持继续迭代。
 
-- GitHub 页面右上角可直接点击 `Sponsor`
+- 如果 GitHub 仓库页面已经显示 `Sponsor this project` 模块，可以直接点击
+- 如果当前页面没有显示 GitHub 的 Sponsor 模块，请直接使用下面这组仓库内捐赠入口
 - 如果你更习惯国内付款方式，可以直接扫码赞助
 
 <div>

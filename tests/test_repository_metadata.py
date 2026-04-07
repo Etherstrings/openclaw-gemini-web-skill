@@ -16,8 +16,12 @@ class RepositoryMetadataContractTest(unittest.TestCase):
     def test_readme_exposes_donate_section(self) -> None:
         source = README_PATH.read_text(encoding="utf-8")
 
+        self.assertIn("[![Donate]", source)
+        self.assertIn("[跳转到赞助支持](#donate)", source)
+        self.assertIn("https://clawhub.ai/skills/openclaw-gemini-web", source)
         self.assertIn('## <a id="donate"></a>赞助支持', source)
-        self.assertIn("Sponsor", source)
+        self.assertIn("Sponsor this project", source)
+        self.assertIn("如果当前页面没有显示 GitHub 的 Sponsor 模块", source)
         self.assertIn("docs/assets/donate/alipay.jpg", source)
         self.assertIn("docs/assets/donate/wechat.jpg", source)
         self.assertIn("## 功能简介", source)
