@@ -7,6 +7,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 README_PATH = REPO_ROOT / "README.md"
 FUNDING_PATH = REPO_ROOT / ".github" / "FUNDING.yml"
+RUNBOOK_PATH = REPO_ROOT / "docs" / "GEMINI_LOGIN_RUNBOOK.md"
 ALIPAY_QR_PATH = REPO_ROOT / "docs" / "assets" / "donate" / "alipay.jpg"
 WECHAT_QR_PATH = REPO_ROOT / "docs" / "assets" / "donate" / "wechat.jpg"
 
@@ -21,6 +22,10 @@ class RepositoryMetadataContractTest(unittest.TestCase):
         self.assertIn("docs/assets/donate/wechat.jpg", source)
         self.assertIn("## 功能简介", source)
         self.assertIn("## 已验证流程", source)
+        self.assertIn("docs/GEMINI_LOGIN_RUNBOOK.md", source)
+        self.assertIn("## 登录与地区排查基线", source)
+        self.assertIn("#totpPin", source)
+        self.assertIn("myaccount.google.com", source)
 
     def test_funding_links_to_readme_donate_anchor(self) -> None:
         source = FUNDING_PATH.read_text(encoding="utf-8")
@@ -33,6 +38,9 @@ class RepositoryMetadataContractTest(unittest.TestCase):
     def test_donate_images_exist(self) -> None:
         self.assertTrue(ALIPAY_QR_PATH.is_file())
         self.assertTrue(WECHAT_QR_PATH.is_file())
+
+    def test_runbook_exists(self) -> None:
+        self.assertTrue(RUNBOOK_PATH.is_file())
 
 
 if __name__ == "__main__":

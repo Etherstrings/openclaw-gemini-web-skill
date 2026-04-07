@@ -1,6 +1,6 @@
 ---
 name: openclaw-gemini-web
-version: 0.1.4
+version: 0.1.5
 description: 当用户希望 OpenClaw 通过 Gemini 网页版完成通用浏览器交互时使用，包括登录、续接或分叉 Gemini 线程、上传文件给 Gemini 分析、向 Gemini 提问、起草或总结内容，以及生成可下载图片。
 homepage: https://github.com/Etherstrings/openclaw-gemini-web-skill
 metadata:
@@ -43,6 +43,8 @@ OpenClaw 自身文档建议优先人工登录。请按下面顺序处理：
 
 Google 密码步骤加上 Google Authenticator TOTP 流程，已经在干净的 OpenClaw 浏览器档案里完成端到端验证，并成功跑通了一次 Gemini 消息往返。
 
+排查中如果需要更强的证据，不要优先新起一个纯自动化浏览器去登 Google。实测里，真 Chrome 或 OpenClaw 托管浏览器更稳定；直接新起自动化浏览器更容易撞上 `This browser or app may not be secure` 或空白 / `502`，这类现象优先视为浏览器风控，不要直接判断成地区不支持。
+
 ## 凭据来源
 
 OpenClaw 可以从当前任务上下文或环境变量中读取这些值：
@@ -84,6 +86,9 @@ python3 {baseDir}/scripts/totp.py --json-file ~/.secrets/gemini.json --json-key 
 
 当输入框或聊天界面可见时，把 Gemini 视为已就绪。
 当页面出现 Google 账号表单、账号选择器或登录按钮时，把它视为未登录。
+只有当页面明确出现地区不支持文案时，才把它归类为地区限制。
+
+不要把“跳回登录页”“Google 挑战流程还没完成”“新自动化浏览器报错”误判成地区问题。
 
 ### 3. 尝试自动登录
 
@@ -93,9 +98,23 @@ python3 {baseDir}/scripts/totp.py --json-file ~/.secrets/gemini.json --json-key 
 - 用 `GEMINI_WEB_PASSWORD` 填写密码
 - 如果页面要求输入 2FA 验证码：
   - 用 `scripts/totp.py` 即时生成一枚验证码
-  - 立刻填入当前验证码
+  - 优先寻找 Google Authenticator 验证页里的 `#totpPin`
+  - 立刻填入当前验证码并提交，避免验证码过期
 
 如果任一步登录流程变得不明确，或者 Google 临时改变了挑战步骤，就停下来，让用户在同一个浏览器窗口里手动完成。
+
+### 4. 区分地区问题与登录问题
+
+按下面顺序排查：
+
+1. 先打开 `https://gemini.google.com/app`，确认页面到底是登录页、挑战页，还是明确的地区不支持页。
+2. 优先在 OpenClaw 托管浏览器里复用现有标签页和会话，不要一上来就新起浏览器。
+3. 如果为了诊断必须接管浏览器，优先接管真 Chrome 会话，而不是用新起的自动化浏览器直接登录。
+4. 登录完成后，再打开 `https://myaccount.google.com/personal-info`，确认 Google 账号本身已经成功登录。
+5. 最后向 Gemini 发送一条最小验证消息，例如 `Reply with exactly: READY`。
+6. 只有在登录完成后，Gemini 仍然明确显示地区不支持文案，才继续按地区策略问题处理。
+
+这一顺序的目的，是把 Google 登录风控、登录未完成和真正的 Gemini 地区限制拆开判断。
 
 ## Gemini 交互模式
 
@@ -106,6 +125,7 @@ python3 {baseDir}/scripts/totp.py --json-file ~/.secrets/gemini.json --json-key 
 - 当用户明确说“new chat”“fresh thread”，或者任务显然已经换题时，开启新的 Gemini 线程。
 - 在总结之前，要先等 Gemini 把回复完整生成完。
 - 这条路径适合日常型请求，比如向 Gemini 提问、比较选项、脑暴、翻译、改写或解释材料。
+- 如果只是要验证当前环境是否真的可用，优先先发一条最小消息，而不是直接进入长任务。
 
 ### 文件与图片上传
 
@@ -156,6 +176,7 @@ python3 {baseDir}/scripts/totp.py --json-file ~/.secrets/gemini.json --json-key 
 
 - 告诉用户当前 Gemini 是已经登录，还是需要发起登录尝试。
 - 如果自动化撞上 Google 的安全拦截，要明确说明，并把浏览器停在可接管状态。
+- 如果怀疑是地区问题，要先说明已经完成了哪些证据检查，例如是否已打开过 `myaccount.google.com`、是否已做过最小消息往返。
 - 每次成功完成一次 Gemini 交互后，都要汇报：
   - 这次是新线程还是续接旧线程
   - Gemini 返回了哪一类结果

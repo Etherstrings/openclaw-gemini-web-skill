@@ -33,6 +33,17 @@
 - 成功进入 `https://gemini.google.com/app`
 - 在 Gemini 内成功完成一轮提示词与回复闭环
 
+另外，这个仓库已经沉淀了一次更细的“地区问题 vs 登录问题”排查结论，核心经验如下：
+
+- 不要把“跳回登录页”“新自动化浏览器报 502”直接判成地区不支持
+- 更稳定的路径是 `OpenClaw 托管浏览器 / 真 Chrome + 复用会话 + TOTP`
+- Google Authenticator 验证页里，这次实测可用的输入框是 `#totpPin`
+- 登录完成后，应至少再验证一次 `myaccount.google.com` 和一次真实 Gemini 对话
+
+完整手册见：
+
+- [docs/GEMINI_LOGIN_RUNBOOK.md](docs/GEMINI_LOGIN_RUNBOOK.md)
+
 ## 项目结构
 
 ```text
@@ -63,12 +74,29 @@ python3 skills/openclaw-gemini-web/scripts/totp.py --env GEMINI_WEB_TOTP_SECRET
 python3 skills/openclaw-gemini-web/scripts/totp.py --uri 'otpauth://totp/Gemini:me@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Gemini'
 ```
 
+## 登录与地区排查基线
+
+推荐按下面顺序判断，不要一上来就把问题归因到地区：
+
+1. 先打开 `https://gemini.google.com/app`，确认是“未登录”还是“明确的地区不支持页”
+2. 优先复用 OpenClaw 托管浏览器里的现有会话
+3. 如果必须人工排障，优先接管真 Chrome 会话，而不是新起一个纯自动化浏览器
+4. 遇到 Google Authenticator 时，用仓库自带脚本生成验证码并填写 `#totpPin`
+5. 登录成功后，再访问 `https://myaccount.google.com/personal-info`
+6. 最后给 Gemini 发一条最小消息，确认它真的能返回内容
+
+这套判断顺序的目的，是把下面三类问题明确拆开：
+
+- Google 登录风控
+- 会话没有真正登录完成
+- Gemini 真正的地区限制
+
 ## 发布到 ClawHub
 
 ```bash
 clawhub publish skills/openclaw-gemini-web \
   --slug openclaw-gemini-web \
   --name "OpenClaw Gemini Web" \
-  --version 0.1.4 \
-  --changelog "将仓库文档与技能说明切换为中文"
+  --version 0.1.5 \
+  --changelog "补充 Gemini 登录、TOTP 与地区排查的实测经验"
 ```
