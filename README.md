@@ -1,14 +1,23 @@
 # OpenClaw Gemini Web Skill
 
+<div align="center">
+
+**复用真实浏览器会话，把 Gemini 网页版稳定接进 OpenClaw。**
+
 [![Donate](https://img.shields.io/badge/Donate-%E8%B5%9E%E5%8A%A9%E6%94%AF%E6%8C%81-ffb300?style=for-the-badge)](#donate)
 [![ClawHub](https://img.shields.io/badge/ClawHub-openclaw--gemini--web-1f6feb?style=for-the-badge)](https://clawhub.ai/skills/openclaw-gemini-web)
+![Browser](https://img.shields.io/badge/Browser-Real_Session-1D4ED8?style=flat-square)
+![TOTP](https://img.shields.io/badge/Auth-TOTP_Assist-0F766E?style=flat-square)
+![Gemini Web](https://img.shields.io/badge/Gemini-Web-7C3AED?style=flat-square)
+![Skill](https://img.shields.io/badge/OpenClaw-Skill-C62828?style=flat-square)
+
+真 Chrome 会话复用 · 2FA 辅助 · 文件上传 · 图片生成 · 线程续接
+
+[查看 ClawHub 技能页](https://clawhub.ai/skills/openclaw-gemini-web) · [跳转到赞助支持](#donate)
+
+</div>
 
 一个通过 OpenClaw 托管浏览器驱动 Gemini 网页版的 skill 项目。
-
-快速入口：
-
-- [跳转到赞助支持](#donate)
-- [查看 ClawHub 技能页](https://clawhub.ai/skills/openclaw-gemini-web)
 
 ## <a id="donate"></a>赞助支持
 
